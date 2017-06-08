@@ -2,6 +2,8 @@ version: '2'
 services:
 
   mysql:
+    container_name: bookstack-mysql
+    restart: unless-stopped
     image: mysql:5.7.12
     environment:
     - MYSQL_ROOT_PASSWORD=secret
@@ -9,24 +11,25 @@ services:
     - MYSQL_USER=bookstack
     - MYSQL_PASSWORD=secret
     volumes:
-    - mysql-data:/var/lib/mysql
+    - /volume4/docker/bookstack/db/mysql:/var/lib/mysql
 
   bookstack:
+    container_name: bookstack
+    restart: unless-stopped
     image: solidnerd/bookstack:0.16.2
     depends_on:
     - mysql
     environment:
-    - DB_HOST=mysql:3306
+    - DB_HOST=mysql
     - DB_DATABASE=bookstack
     - DB_USERNAME=bookstack
     - DB_PASSWORD=secret
     volumes:
-    - uploads:/var/www/BookStack/public/uploads
-    - storage-uploads:/var/www/BookStack/storage/uploads
+    - /volume4/docker/bookstack/public/uploads:/var/www/BookStack/public/uploads
+    - /volume4/docker/bookstack/storage/uploads:/var/www/BookStack/storage/uploads
     ports:
-    - "8080:80"
+    - "8083:80"
+    expose:
+    - "8083"
+    
 
-volumes:
- mysql-data:
- uploads:
- storage-uploads:
